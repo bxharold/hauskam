@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>hauskam</title>
+    <P>
+    These pictures are on the hauskam server, and are tracked in Hauskam.db
+        <table>
+            {% for row in rows %}
+            <TR>
+                <TD> {{ row[0] }} </TD>
+                <TD> {{ row[1] }} </TD>
+                <TD> <img src="{{row[1]}}"> </TD>
+                <TD> {{ row[2] }} </TD>
+            </TR>
+            {% endfor %}
+        </table>
+    </P>
+</html>
