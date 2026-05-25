@@ -15,11 +15,18 @@
                  To exec from command line, first source ~/smtp.txt
 - hrauskam.py  - rebuild Hauskam.db (no effect on images in static/). 
 - hlauskam.py  - lister utility functions. 'u' updates all to unsent.
-- hvauskam.py  - viewer: flask server to display images. Runs as a service.
+- hvauskam.py  - viewer: flask server to display images. Runs as a service on port 8788.
+                 requires hpicfilename.py API to be running on port 8787
+                 I suppose hpicfilename.py should ALSO be a sevice...
+- h5656vauskam.py  - bare-bones viewer: flask server to display images. 
 - Hauskam.db   - sqlite3 db. table hauskam stores filenames of snapshots
 - static/      - All snapshots are stored here
 - ~/smtp.txt   - gmail creds. source ~/smtp.txt if exec'd from command line
                  cron-fake reads gmail creds from ~/smtp.txt
+
+- wifipi_info.py    - runs at startup, sends email with IP and service status.
+- hhsysctl_stat.sh  - gets IP and service status, is called by wifipi_info.py
+                      I suppose hpicfilename.py should ALSO be a sevice...
 
 
 ##  Usage and Configuration:
@@ -29,10 +36,10 @@
 - cron-fake.py -- runs hmauskam.py every hour (replaces a cron task)
      hmauskam.py reads gmail pw from ~/smtp.txt, no env vbl;
        sends recent jpg's as attachments
+- wifipi_info.py -- on pi reboot, calls hhsysctl_stat.sh, sends email with IP and service status.
 
 ##  Command-line Maintenance::
 -   ./hrauskam.py a b    # resets the Hauskam.db database
-     ( the /reset route is an alt way to reset the Hauskam.db database)
      NOTE: the database is NOT sync'ed with the static/ folder.
 -  ./hlauskam.py        # lists hauskam table
 -  rm -rf static/*jpg   # removes non-archived jpgs
@@ -51,6 +58,19 @@
                 sudo systemctl daemon-reload
         2: Enable service to start on boot:
                 sudo systemctl enable X.service
+- refer to the nice documentation Services-systemctl.txt
+
+## Startup:
+-  zc is configured to start everything when the Pi is plugged in.
+
+## Shutdown:
+1-  Stop the sense/snap/save/wait service (sudo systemctl stop hsauskam.service)
+2-  Stop the cron-fake service (sudo systemctl stop cron-fake.service)
+3-  Run the mailer to clear out the unSENT queue:
+    - source ~/smtp.txt  -- load email creds into environment
+    - run the mailer ./hmauskam.py 
+
+
 
 ## NOTES:
 ### cron got too complicated vis-a-vis emails, so I wrote cron-fake as a workaround.
