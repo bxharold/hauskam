@@ -1,0 +1,115 @@
+<HTML>
+<HEAD>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <style>
+       B  { color: red; }
+       th { text-align: center; }
+       input { text-align: center; }
+       td,th  { padding: 5px; }
+       table, th, td {
+         bborder: 1px solid black;
+         border-collapse: collapse; }
+       .B { color: #0a0000; background-color: #aaf3bc; font-size: 13px; 
+          border: 1px solid #2d63c8; padding: 5px 5px; cursor: pointer; 
+          width: 90px; height: 28px; border-radius: 9px; }
+       .B:hover { color: #2d63c8; background-color: #68ee9b; }
+       #number {
+         width: 33em;
+         height: 13em;
+       }
+   </style>
+
+<script>
+  function getFilenameAndUpdateUI(filename) {
+      tto = `http://zc.local:8787/${filename}`
+      document.getElementById('mypic').src = tto
+      console.log("loaded: " + document.getElementById('mypic').src)
+  }
+
+window.addEventListener('load', (event) => {
+
+  document.getElementById("prev").addEventListener('click', 
+    (event) => { 
+       n = document.getElementById("picid").value
+       n--
+       document.getElementById("picid").value = n
+       document.getElementById("selectrecord").click()
+    }
+  )
+
+  document.getElementById("next").addEventListener('click', 
+    (event) => { 
+       n = document.getElementById("picid").value
+       n++
+       document.getElementById("picid").value = n
+       document.getElementById("selectrecord").click()
+    }
+  )
+
+  /***** version 3 API fetch code, fully modernized, with           **/
+  /*  `async/await`, **Arrow Functions**, and **Destructuring**:    **/
+  /*  See ~/garden/square/  spoo-apr-7.txt and jchat/daxscript.js   **/
+
+  document.getElementById("selectrecord").addEventListener('click', 
+    async (event) => {
+      event.preventDefault();
+      const number = document.getElementById('picid').value;
+      const msgarea = document.getElementById('msg');
+      const endpoint = `http://zc.local:8787/pullpic/${number}`;
+      console.log(endpoint)
+  
+      try {
+        const response = await fetch(endpoint);
+        // Destructure the properties directly from the awaited JSON
+        const { filename, id } = await response.json();
+        //if (error) {    //   not yet implemented
+          //resultDiv.textContent = error;
+          //return; // Early return pattern to avoid 'else' nesting
+        //}
+        console.log(`${id} : ${filename} `)
+        document.getElementById("msg").innerHTML = `${id} : ${filename} `
+        msgarea.innerHTML = `id=: ${id} : filename=: ${filename} `
+        getFilenameAndUpdateUI(filename) // set src of the pic
+      } catch (err) {
+        console.error('Fetch error:', err);
+      }
+    });
+
+})
+/******** end version 3 **********/
+</script>
+</HEAD>
+
+<BODY>
+<H4><B>&gt;</B> hvauskam.py, templates/hvauskam.html can run on any machine
+<BR><B>&gt;</B> the API hpicfilename.py runs where the static images are (zc) </H4>
+<center>
+<P> <div id="picdiv" name="picdiv"><img src=static/tent_slider.png height=480 width=640 id="mypic"></div>
+<table border=0 ules=rows>
+  <tr>
+      <td><input type=button class="B" value="prev" id="prev">
+      <th><input type=text name="picid" id="picid"  value="{{maxid}}" width=10 isabled> 
+      <td><input type=button class="B" value="next" id="next" >
+  <tr>
+      <td><th><input type=button class="B" id="selectrecord" value="select record" ><td>
+  <tr>
+      <td colspan=3><span name="msg" id="msg">  hello. Max ID = {{maxid}} </span>
+</table>
+</center>
+<LI> This number element is kinda truly not bad... 
+<label for="tentacles">Number of tentacles (10-100):</label>
+<input type="number" value=13 id="tentacles2" name="tentacles" min="10" max="100" 
+     onChange="document.getElementById('msg').innerHTML=`${this.value} arms`"/>
+<LI> API endpoint pullpic/<int:x> in hpicfilename.py returns json with pic filename.
+<LI> API endpoint maxid in hpicfilename.py returns json with max id
+<LI> selectrecord takes the value of picid, then calls the API which returns a filename. 
+<LI> The src of the img field is updated using simple javascript..
+<LI> The images are in the static directory of the server running the API.  
+<LI> select, prev and next call getFilenameAndUpdateUI(picid) with field picid value.
+<LI> getFilenameAndUpdateUI() calls the API "pullpic" route, which returns a 
+     new value and a filename, then updates the img src, picid and msg fields.
+<LI> hpicfilename.py takes an ID, reads the database, returns json with the filename
+<LI> hvauskam.py and hvauskam.html comprise the UI. The old hvauskam.py is renamed h5656vauskam.py
+</BODY>
+</HTML>
+

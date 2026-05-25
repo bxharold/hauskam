@@ -1,0 +1,24 @@
+<HTML>
+<script>
+
+// there's something about needing a comma to indicate the datatype.
+
+async function getMax() {
+    const endpoint = `http://zc.local:8787/maxid`;
+    console.log(endpoint)
+    try {
+      const response = await fetch(endpoint);
+      const { id, comma } = await response.json();
+      console.log(`${id}  ${comma}`)
+    } catch (err) {
+      console.error('Fetch error:', err);
+    }
+  };
+
+</script>
+<BODY>
+<input type=button onClick="getMax()">
+</BODY
+</HTML>
+
+

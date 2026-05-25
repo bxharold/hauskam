@@ -8,19 +8,23 @@
 
 ## Components:
 - cron-fake.py - workaround to cron's MTA failure, runs as a service
-- hsauskam.py  - snap/save/wait (loop), runs as a service
-- hmauskam.py  -  mailer -- exec'd by cron-fake.py service. 
-                 The gmail creds are stored in ~/smtp.txt
+                 execs hmauskam.py hourly. reads gmail creds from ~/smtp.txt, 
+                 passes to hmauskam.py as env vbl
+- hsauskam.py  - sense/snap/save/wait (loop), runs as a service
+- hmauskam.py  - mailer -- exec'd by cron-fake.py service
+                 To exec from command line, first source ~/smtp.txt
 - hrauskam.py  - rebuild Hauskam.db (no effect on images in static/). 
-                 All snapshots are stored in static/
 - hlauskam.py  - lister utility functions. 'u' updates all to unsent.
-- hvauskam.py  - viewer: flask to display images. Runs as a service.
-- Hauskam.db   - sqlite3 db, one table: hauskam
+- hvauskam.py  - viewer: flask server to display images. Runs as a service.
+- Hauskam.db   - sqlite3 db. table hauskam stores filenames of snapshots
+- static/      - All snapshots are stored here
+- ~/smtp.txt   - gmail creds. source ~/smtp.txt if exec'd from command line
+                 cron-fake reads gmail creds from ~/smtp.txt
 
 
 ##  Usage and Configuration:
 ### Services (started at bootup)    /lib/systemd/system
-- hsauskam.py -- the snap/save/wait loop.
+- hsauskam.py -- the sense/snap/save/wait loop.
 - hvauskam.py -- the flask server for displaying the jpg's
 - cron-fake.py -- runs hmauskam.py every hour (replaces a cron task)
      hmauskam.py reads gmail pw from ~/smtp.txt, no env vbl;

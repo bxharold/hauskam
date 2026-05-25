@@ -1,0 +1,25 @@
+#!/bin/bash
+# hsysctl_stat.sh  Only for RPi
+#    bash script to report status of hauskam services
+#    wifipi_info.py uses this script
+
+hname=$(hostname)
+ip=$(hostname -I)
+os="$(cat /etc/os-release | head -1 | cut -c13-)"
+
+hsaus=$(systemctl is-enabled hsauskam.service)
+hsaus="$hsaus"" / "$(systemctl is-active hsauskam.service)
+hsaus="hsauskam.service is : ${hsaus}" ; #echo $hsaus
+
+hvaus=$(systemctl is-enabled hvauskam.service)
+hvaus="$hvaus"" / "$(systemctl is-active hvauskam.service)
+hvaus="hvauskam.service is : ${hvaus}" ; #echo $hvaus
+
+hcron=$(systemctl is-enabled cron-fake.service)
+hcron="$hcron"" / "$(systemctl is-active cron-fake.service)
+hcron="cron-fake.service is : ${hcron}" ; #echo $hcron
+
+status=$hname"\n"$ip"\n"$os"\n"$hsaus"\n"$hvaus"\n"$hcron"\n"
+#echo    "$status"
+echo -e "$status"
+
