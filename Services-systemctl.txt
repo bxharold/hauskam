@@ -56,6 +56,18 @@ ExecStart=/usr/bin/python3 /home/pi/Git/hauskam/hsauskam.py
 WantedBy=multi-user.target
 
 
+========= pi@zc:~/Git/hauskam $ cat /lib/systemd/system/h5656vauskam.service
+[Unit]
+Description=My basic hvauskam Service -- Flask server
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /home/pi/Git/hauskam/h5656vauskam.py
+
+[Install]
+WantedBy=multi-user.target
+
 
 ========= pi@zc:~/Git/hauskam $ cat /lib/systemd/system/hvauskam.service
 [Unit]
@@ -82,6 +94,19 @@ ExecStart=/usr/bin/python3 /home/pi/Git/hauskam/cron-fake.py
 [Install]
 WantedBy=multi-user.target
 
+========= pi@zc:~/Git/hauskam $ cat /lib/systemd/system/hpicfilename.service
+[Unit]
+Description=hpicfilename Service -- API for hvauskam
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /home/pi/Git/hauskam/hpicfilename.py
+
+[Install]
+WantedBy=multi-user.target
+
+
 ========> then, reload systemd config:  
 sudo systemctl daemon-reload
 
@@ -89,6 +114,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable hsauskam.service
 sudo systemctl enable hvauskam.service
 sudo systemctl enable cron-fake.service
+sudo systemctl enable h5656vauskam.service
+sudo systemctl enable hpicfilename.service
+edit ~/Git/hauskam/hhsysctl_stat.sh
+
    according to the above notes, I could use
 sudo systemctl enable --now cron-fake.service
    etc

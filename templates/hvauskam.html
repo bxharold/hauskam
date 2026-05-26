@@ -1,4 +1,5 @@
-<HTML>
+<!DOCTYPE html>
+<html lang="en">
 <HEAD>
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <style>
@@ -84,7 +85,7 @@ window.addEventListener('load', (event) => {
 <H4><B>&gt;</B> hvauskam.py, templates/hvauskam.html can run on any machine
 <BR><B>&gt;</B> the API hpicfilename.py runs where the static images are (zc) </H4>
 <center>
-<P> <div id="picdiv" name="picdiv"><img src=static/tent_slider.png height=480 width=640 id="mypic"></div>
+<P> <div id="picdiv" name="picdiv"><img src=static/{{image}} height=480 width=640 id="mypic"></div>
 <table border=0 ules=rows>
   <tr>
       <td><input type=button class="B" value="prev" id="prev">

@@ -9,6 +9,8 @@ from sqlite3 import Error
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+rootdir = "/home/pi/Git/hauskam/"
+
 @app.route("/root/<x>")  # http://127.0.0.1:5000/5
 def root(x):
   result = int(x)**0.5
@@ -34,7 +36,7 @@ CREATE TABLE IF NOT EXISTS 'hauskam' (
 
 @app.route("/maxid")  # return the max id of the pic's in Hauskam.db 
 def maxid():
-  with sqlite3.connect("Hauskam.db") as conn:
+  with sqlite3.connect(rootdir +"Hauskam.db") as conn:
     cursor = conn.cursor()
     cursor.execute(f"select max(id) from hauskam")
     # I may want to add fields, e.g., maxdate, and input date ranges
@@ -47,7 +49,7 @@ def maxid():
 
 @app.route("/pullpic/<int:x>")  # return the pic's filename in Hauskam.db 
 def pullpic(x):
-  with sqlite3.connect("Hauskam.db") as conn:
+  with sqlite3.connect(rootdir +"Hauskam.db") as conn:
     cursor = conn.cursor()
     #cursor.execute(f"select id,filename from hauskam where id={x}")
     #cursor.execute("select id,filename from hauskam where id = ?",  (x,))

@@ -11,22 +11,22 @@
                  execs hmauskam.py hourly. reads gmail creds from ~/smtp.txt, 
                  passes to hmauskam.py as env vbl
 - hsauskam.py  - sense/snap/save/wait (loop), runs as a service
-- hmauskam.py  - mailer -- exec'd by cron-fake.py service
-                 To exec from command line, first source ~/smtp.txt
-- hrauskam.py  - rebuild Hauskam.db (no effect on images in static/). 
-- hlauskam.py  - lister utility functions. 'u' updates all to unsent.
 - hvauskam.py  - viewer: flask server to display images. Runs as a service on port 8788.
                  requires hpicfilename.py API to be running on port 8787
                  I suppose hpicfilename.py should ALSO be a sevice...
 - h5656vauskam.py  - bare-bones viewer: flask server to display images. 
+- hpicfilename.py - API.  Runs as a service on port 8788
+                 I had to do:  sudo pip install Flask-CORS  (sudo was essential,)
 - Hauskam.db   - sqlite3 db. table hauskam stores filenames of snapshots
+- hmauskam.py  - mailer -- exec'd by cron-fake.py service
+                 To exec from command line, first source ~/smtp.txt
+- hrauskam.py  - rebuild Hauskam.db (no effect on images in static/). 
+- hlauskam.py  - lister utility functions. 'u' updates all to unsent.
 - static/      - All snapshots are stored here
 - ~/smtp.txt   - gmail creds. source ~/smtp.txt if exec'd from command line
                  cron-fake reads gmail creds from ~/smtp.txt
-
 - wifipi_info.py    - runs at startup, sends email with IP and service status.
 - hhsysctl_stat.sh  - gets IP and service status, is called by wifipi_info.py
-                      I suppose hpicfilename.py should ALSO be a sevice...
 
 
 ##  Usage and Configuration:
@@ -39,8 +39,10 @@
 - wifipi_info.py -- on pi reboot, calls hhsysctl_stat.sh, sends email with IP and service status.
 
 ##  Command-line Maintenance::
--   ./hrauskam.py a b    # resets the Hauskam.db database
-     NOTE: the database is NOT sync'ed with the static/ folder.
+-   deal wuth static/:  e.g.,  rm -f PIC*
+-  ./hrauskam.py a b    # rebuilds the Hauskam.db database
+        NOTE: the database is NOT sync'ed with the static/ folder.
+        to start with a clean database, first rm Hauskam.db
 -  ./hlauskam.py        # lists hauskam table
 -  rm -rf static/*jpg   # removes non-archived jpgs
 -  systemctl status cron-fake.service
@@ -53,22 +55,46 @@
 -  journalctl -r
 -  To get X.service to run at boot: (2 steps; I asked gemini.)
   >
-        0. sudo cp X.service  /etc/systemd/system (See text below.)
+        0. sudo cp X.service  /lib/systemd/system (See text below.)
         1: Reload systemd configuration:
                 sudo systemctl daemon-reload
         2: Enable service to start on boot:
                 sudo systemctl enable X.service
-- refer to the nice documentation Services-systemctl.txt
+        3: To add a service to start on boot:
+          - add an entry in  /lib/systemd/system
+          - sudo systemctl daemon-reload
+          - sudo systemctl enable X.service
+          - update ~/Git/hauskam/hhsysctl_stat.sh
+          - copy that to  ~/hhsysctl_stat.sh
+          - refer to the nice documentation Services-systemctl.txt
 
 ## Startup:
 -  zc is configured to start everything when the Pi is plugged in.
 
 ## Shutdown:
-1-  Stop the sense/snap/save/wait service (sudo systemctl stop hsauskam.service)
-2-  Stop the cron-fake service (sudo systemctl stop cron-fake.service)
+1-  Stop the sense/snap/save/wait service 
+        sudo systemctl stop hsauskam.service
+2-  Stop the cron-fake service 
+        sudo systemctl stop cron-fake.service
 3-  Run the mailer to clear out the unSENT queue:
-    - source ~/smtp.txt  -- load email creds into environment
-    - run the mailer ./hmauskam.py 
+        source ~/smtp.txt ; ./hmauskam.py 
+4-  sudo shutdown now
+== OR IN ONE PASTE: ==
+        sudo systemctl stop hsauskam.service
+        sudo systemctl stop cron-fake.service
+        source ~/smtp.txt ; ./hmauskam.py 
+        sudo shutdown now
+
+## BUG:
+   - CORS: hpicfilename.py runs from CL, but fails as service.  
+     Resolved. ""Since systemd typically runs services as root or 
+     a dedicated system user, you need to install the package using 
+     sudo so it is accessible globally: "
+         sudo pip install -U flask-cors  (sudo was essential.) 
+
+   - absolute paths to the database (resolved.)
+
+
 
 
 
@@ -80,7 +106,7 @@ Jul 16 22:31 cron-fake.service
 Dec 22 22:31 hsauskam.service
 Jul 16 22:27 hvauskam.service
 ```
-###    cron-fake invokes hmauskam as a subprocess with a (local?) env:
+###    cron-fake invokes hmauskam as a subprocess with a (local) env:
 ```
     winky = subprocess.run( ['cat', '/home/pi/smtp.txt'],
             capture_output = True, text = True )
@@ -92,10 +118,3 @@ Jul 16 22:27 hvauskam.service
           env=dict(os.environ, WIN7_HKEY=f'{w}'))
 ```
 
-MORE NOTES: 
--  the database is NOT sync'ed with the static/ folder.
--  cron is no longer used for hauskam. I replaced
-```        
-# @reboot python3 /home/pi/Git/hauskam/hsauskam.py
-```
-- with systemctl daemon-reload steps (above.)

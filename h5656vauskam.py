@@ -12,7 +12,7 @@ app = Flask(__name__)
 def index():
   with sqlite3.connect("/home/pi/Git/hauskam/Hauskam.db") as conn:
     cursor = conn.cursor()
-    cursor.execute("select htime, filename, mailed from hauskam order by htime desc limit 28")
+    cursor.execute("select htime, filename, mailed, id from hauskam order by htime desc limit 28")
     rows = cursor.fetchall()
     cursor.close()
     return render_template("h5656vauskam.html", rows=rows)

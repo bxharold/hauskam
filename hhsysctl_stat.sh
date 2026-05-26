@@ -19,7 +19,15 @@ hcron=$(systemctl is-enabled cron-fake.service)
 hcron="$hcron"" / "$(systemctl is-active cron-fake.service)
 hcron="cron-fake.service is : ${hcron}" ; #echo $hcron
 
-status=$hname"\n"$ip"\n"$os"\n"$hsaus"\n"$hvaus"\n"$hcron"\n"
+h5656=$(systemctl is-enabled h5656vauskam.service)
+h5656="$h5656"" / "$(systemctl is-active h5656vauskam.service)
+h5656="h5656vauskam.service is : ${h5656}" ; #echo $h5656
+
+hpicf=$(systemctl is-enabled hpicfilename.service)
+hpicf="$hpicf"" / "$(systemctl is-active hpicfilename.service)
+hpicf="hpicfilename.service is : ${hpicf}" ; #echo $hpicf
+
+status=$hname"\n"$ip"\n"$os"\n"$hsaus"\n"$hvaus"\n"$hcron"\n"$h5656"\n"$hpicf"\n"
 #echo    "$status"
 echo -e "$status"
 

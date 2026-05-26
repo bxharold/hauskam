@@ -12,7 +12,7 @@ hauskam_server = "http://zc.local"
 @app.route('/')
 def loadpic():
     # Fetch image files from the static directory
-    image = "static/tent_slider.png"
+    image = "jeanpaulVlizard.jpg"
     ##### get maxid from the ./hpicfilename.py route maxid
     api_url = "http://zc.local:8787/maxid"
     response = requests.get(api_url)
